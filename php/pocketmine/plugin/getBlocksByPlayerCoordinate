@@ -1,0 +1,41 @@
+/*$levelにレベルデータ、$playerXにプレイヤーのX座標、$playerZにプレイヤーZ座標、$blockYにブロックが来るY座標
+/*TNT Runなどに使えると思います
+/*使用例: $blocks = $this->getBlocksByPlayerCoordinate($player->getLevel(), $player->x, $player->z, $player->y - 1);
+/*返り値は踏んでいるブロックのブロックオブジェクトのArrayですforEachなどで繰り返し処理して使います
+/*例:
+/*	foreach((array)$blocks as $block){
+			if($block->getID() == TNT BlockのID){
+				$this->level->setBlock(new Vector3($block->getX(),$block->getY(),$block->getZ()),Block::get(0,0)); //TNTの上のブロック
+        $this->level->setBlock(new Vector3($block->getX(),$block->getY() - 1,$block->getZ()),Block::get(0,0)); //TNT
+			}
+		}
+*/
+/*まあこのコードこのままやると歩いてるだけで落ちると思うから、schedulerで穴開ける時間を遅らせよう*/
+
+public function getBlocksByPlayerCoordinate(Level $level, $playerX, $playerZ, $blockY){
+		if($playerX - floor($playerX) >= 0.3 && $playerX - floor($playerX) <= 0.7 && $playerZ - floor($playerZ) >= 0.3 && $playerZ - floor($playerZ) <= 0.7){
+			return array($level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerZ))));
+		}elseif($playerX - floor($playerX) >= 0.3 && $playerX - floor($playerX) <= 0.7){
+			if($playerZ - floor($playerZ) < 0.3){
+				return array($level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerZ))), $level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerZ) - 1)));
+			}elseif($playerZ - floor($playerZ) > 0.7){
+				return array($level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerZ))), $level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerZ) + 1)));
+			}
+		}elseif($playerZ - floor($playerZ) > 0.3 && $playerZ - floor($playerZ) < 0.7){
+			if($playerX - floor($playerX) < 0.3){
+				return array($level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerZ))), $level->getBlock(new Vector3(floor($playerX) - 1,$blockY,floor($playerZ))));
+			}elseif($playerX - floor($playerX) > 0.7){
+				return array($level->getBlock(new Vector3(floor($playerX) + 1,$blockY,floor($playerZ))), $level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerZ))));
+			}
+		}elseif($playerX - floor($playerX) < 0.3 && $playerZ - floor($playerZ) < 0.3){
+			return array($level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerX))), $level->getBlock(new Vector3(floor($playerX) - 1,$blockY,floor($playerZ))), $level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerZ) - 1)), $level->getBlock(new Vector3(floor($playerX) - 1,$blockY,floor($playerZ) - 1)));
+		}elseif($playerX - floor($playerX) > 0.7 && $playerZ - floor($playerZ) > 0.7){
+			return array($level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerZ))), $level->getBlock(new Vector3(floor($playerX) + 1,$blockY,floor($playerZ))), $level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerZ) + 1)), $level->getBlock(new Vector3(floor($playerX) + 1,$blockY,floor($playerZ) + 1)));
+		}elseif($playerX - floor($playerX) > 0.7 && $playerZ - floor($playerZ) < 0.3){
+			return array($level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerZ))), $level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerZ) - 1)), $level->getBlock(new Vector3(floor($playerX) + 1,$blockY,floor($playerZ) -1)), $level->getBlock(new Vector3(floor($playerX) + 1,$blockY,floor($playerZ))));
+		}elseif($playerX - floor($playerX) < 0.3 && $playerZ - floor($playerZ) > 0.7){
+			return array($level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerZ))), $level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerZ) + 1)), $level->getBlock(new Vector3(floor($playerX) - 1,$blockY,floor($playerZ) + 1)), $level->getBlock(new Vector3(floor($playerX) - 1,$blockY,floor($playerZ))));
+		}elseif($playerX - floor($playerX) < 0.3 && $playerZ - floor($playerZ) < 0.7){
+			return array($level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerZ))), $level->getBlock(new Vector3(floor($playerX),$blockY,floor($playerZ) + 1)), $level->getBlock(new Vector3(floor($playerX) - 1,$blockY,floor($playerZ) + 1)), $level->getBlock(new Vector3(floor($playerX) - 1,$blockY,floor($playerZ))));
+		}
+ }
